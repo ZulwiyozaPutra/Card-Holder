@@ -8,7 +8,29 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    var globalImage = [String: UIImage]()
+
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject])
+    {
+        picker .dismissViewControllerAnimated(true, completion: nil)
+        globalImage["pickedImage"]=info[UIImagePickerControllerOriginalImage] as? UIImage
+        performSegueWithIdentifier("shitSegue", sender: self)
+    }
+    
+    @IBAction func scanButton(sender: AnyObject) {
+        
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) {
+            let cardScan = UIImagePickerController()
+            cardScan.delegate = self
+            cardScan.sourceType = UIImagePickerControllerSourceType.Camera;
+            cardScan.allowsEditing = false
+            self.presentViewController(cardScan, animated: true, completion: nil)
+            
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,7 +41,10 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let destinationController : ViewController2 = segue.destinationViewController as! ViewController2
+        destinationController.image = globalImage["pickedImage"]
+    }
 }
 
